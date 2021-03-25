@@ -4,3 +4,5 @@ import serviceAccount from '../config/elixir-fbae4-firebase-adminsdk-fl3gg-ac5ea
 admin.initializeApp({
     credential: admin.credential.cert(serviceAccount)
 });
+
+export default admin
