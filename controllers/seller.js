@@ -2,6 +2,8 @@ import mongoose from 'mongoose'
 import Product from '../models/product.js'
 import Stripe from 'stripe'
 import https from 'https'
+import User from '../models/user.js'
+
 
 const stripe = new Stripe('sk_test_51IRbfUHUA6kmXMG3oK2vTQJgAiMbmqqjtpZ5p1WUL0shTZWd76LlQAaxEzQgoLM5AhQI7lVjhdJmLbTA4tw1V8En00aROjegL1')
 
@@ -91,59 +93,6 @@ export const createSeller = async (request, response) => {
 
 
 
-export const createProduct = async (req, res) => {
-
-    const { product } = req.body
-
-    const totalProducts = seller.totalProducts + 1
-    const remainingProducts = seller.remainingProducts - 1
-    try {
-        const newSeller = await new Product({
-            product: product,
-        }).save()
-        res.json(newSeller)
-
-    } catch (err) {
-        console.log('error in creating product at controller', err);
-    }
-}
-
-export const updateProduct = async (req, res) => {
-
-    const { id, product } = req.body
-    try {
-        await Product.findOneAndUpdate({ _id: id }, {
-            product: product,
-        }).exec()
-        res.json("Product Updated")
-    } catch (error) {
-        console.log('Error in Updating product at Controller', error);
-    }
-}
-
-export const deleteProduct = async (req, res) => {
-
-    const { id } = req.body
-
-    try {
-        await Product.findOneDelete({ _id: id }).exec(err, res => {
-
-        })
-        res.json("Product Removed")
-    } catch (error) {
-        console.log('Error in Delete Product at Controller', error);
-    }
-}
-// export const getSellerProduct = async (req, res) => {
-//     const id = req.params.id
-//     try {
-//         const product = await User.findById({ _id: id })
-//         res.json(product)
-//     } catch (error) {
-//         console.log('Error in Getting product at Controller', error);
-//     }
-// }
-
 export const packagePayment = async (req, res) => {
     const { packages, token } = req.body
     console.log("Package--->", packages, "Token--->", token);
@@ -165,4 +114,43 @@ export const packagePayment = async (req, res) => {
             res.json(result)
         }
     }).catch(error => console.log(error))
+}
+
+
+
+export const getSellers = async (req, res) => {
+    const limit = Number(req.query.pageSize)
+    const sortName = req.query.sortName
+    const type = Number(req.query.manner)
+    const pageNumber = Number(req.query.pageNumber) || 0
+
+    try {
+
+
+        if (limit !== null && pageNumber !== 0 && sortName !== null && type !== null) {
+
+            const count = await User.find({ role: 'seller' }).countDocuments()
+            User.find({ role: 'seller' }).limit(limit).skip(limit * (pageNumber - 1)).sort({ [sortName]: type }).exec((err, result) => {
+                if (err) {
+                    console.log(err)
+                } else {
+                    res.json({ sellers: result, pageNumber, pages: Math.ceil(count / limit) })
+                }
+            })
+        } else {
+            await User.find({ role: 'seller' }).exec((err, result) => {
+                if (err) {
+                    console.log(err)
+                } else {
+                    res.json(result)
+                }
+            })
+        }
+
+    } catch (err) {
+        console.log(err)
+        res.json({
+            err: 'Invalid Seller'
+        })
+    }
 }

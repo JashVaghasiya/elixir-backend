@@ -25,6 +25,6 @@ const advertisementSchema = mongoose.Schema({
     }
 }, { timestamps: true })
 
-const advertisementSchema = mongoose.model('cart', advertisementSchema)
+const advertisement = mongoose.model('ads', advertisementSchema)
 
-export default advertisementSchema
+export default advertisement

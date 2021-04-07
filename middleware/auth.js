@@ -34,6 +34,28 @@ export const adminCheck = async (req, res, next) => {
     }
 }
 
+
+export const agencyCheck = async (req, res, next) => {
+    try {
+        const { email } = req.user
+        const user = await User.findOne({ email: email })
+
+        if (user.role === 'agency') {
+            next()
+        } else {
+            res.status(403).json({
+                err: 'Agency resources. Access denied!'
+            })
+        }
+
+    } catch (err) {
+        console.error(err);
+    }
+}
+
+
+
+
 export const sellerCheck = async (req, res, next) => {
     try {
         const { email } = req.user

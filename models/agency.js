@@ -4,12 +4,18 @@ const agencySchema = mongoose.Schema({
     name: {
         type: String
     },
+    address: {
+        type: String
+    },
     email: {
         type: String,
     },
     mobile: {
         type: Number,
         maxlength: [10, 'Too Long']
+    },
+    active: {
+        type: Boolean
     }
 }, {
     timestamps: true

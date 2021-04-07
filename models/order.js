@@ -3,16 +3,15 @@ import mongoose from 'mongoose'
 const { ObjectId } = mongoose.Schema.Types
 
 const orderSchema = mongoose.Schema({
-    productId: {
+    userId: {
         type: ObjectId,
-        ref: 'product'
-    },
-    customerId: {
-        type: ObjectId,
-        ref: 'customer'
+        ref: 'user'
     },
     status: {
         type: String
+    },
+    qty: {
+        type: Number
     },
     grandTotal: {
         type: Number

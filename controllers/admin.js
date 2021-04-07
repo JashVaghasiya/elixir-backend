@@ -6,6 +6,7 @@ import City from '../models/city.js'
 import Category from '../models/category.js'
 import Sub from '../models/sub.js'
 import Agency from '../models/agency.js'
+import Ads from '../models/advertisement.js'
 
 export const getUserCount = async (req, res) => {
     let data = []
@@ -119,17 +120,37 @@ export const getOrderCount = async (req, res) => {
         })
     })
     res.json(data)
+    console.log(data)
 }
 
 export const getUsers = async (req, res) => {
+    const limit = Number(req.query.pageSize)
+    const pageNumber = Number(req.query.pageNumber) || 0
+    const sortName = req.query.sortName
+    const type = Number(req.query.manner)
     try {
-        User.find({ role: 'user' }).exec((err, result) => {
-            if (err) {
-                console.log(err)
-            } else {
-                res.json(result)
-            }
-        })
+
+
+        if (limit !== null && pageNumber !== 0) {
+
+            const count = await User.find({ role: 'user' }).countDocuments()
+            User.find({ role: 'user' }).limit(limit).skip(limit * (pageNumber - 1)).sort({ [sortName]: type }).exec((err, result) => {
+                if (err) {
+                    console.log(err)
+                } else {
+                    res.json({ users: result, pageNumber, pages: Math.ceil(count / limit) })
+                }
+            })
+        } else {
+            User.find({ role: 'user' }).exec((err, result) => {
+                if (err) {
+                    console.log(err)
+                } else {
+                    res.json(result)
+                }
+            })
+        }
+
     } catch (err) {
         console.log(err)
         res.json({
@@ -171,18 +192,9 @@ export const activateUser = async (req, res) => {
 
 
 
-export const getSellers = async (req, res) => {
-    try {
-        const seller = await User.find({ role: 'seller' })
-        res.json(seller)
-    }
-    catch (error) {
-        console.log(error)
-        res.json(error)
-    }
-}
 
-export const getOrders = async (req, res, next) => {
 
-}
+
+
+
 

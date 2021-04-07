@@ -7,6 +7,10 @@ const orderSchema = mongoose.Schema({
         type: ObjectId,
         ref: 'order'
     },
+    userId: {
+        type: ObjectId,
+        ref: 'user'
+    },
     qty: {
         type: Number
     },
@@ -19,6 +23,6 @@ const orderSchema = mongoose.Schema({
     }
 }, { timestamps: true })
 
-const Order = mongoose.model('order', orderSchema)
+const OrderDetail = mongoose.model('orderDetail', orderSchema)
 
-export default Order
+export default OrderDetail

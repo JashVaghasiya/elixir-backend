@@ -58,7 +58,6 @@ export const getProduct = async (req, res) => {
                 console.log(err);
             } else {
                 res.json(result)
-                console.log(result)
             }
         })
     } catch (error) {

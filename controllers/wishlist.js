@@ -1,0 +1,54 @@
+import User from '../models/user.js'
+
+export const addToWishlist = async (req, res) => {
+
+    const { id, productId } = req.body
+    try {
+        User.find({ _id: id, wishlist: productId }).exec((err, result) => {
+            if (result) {
+                if (result.length === 0) {
+                    console.log("In")
+                    User.findOneAndUpdate({ _id: id }, {
+                        $addToSet: { wishlist: productId }
+                    }).exec((err, result) => {
+                        if (result) {
+                            res.json(result)
+                            console.log(result)
+                        } else {
+                            console.log(err)
+                        }
+                    })
+                } else {
+                    res.json({ alreadyAdded: "Product was already added!" })
+                }
+            } else {
+                console.log(err);
+            }
+        })
+    } catch (error) {
+        console.log('Error in adding product in wishlist at Controller', error);
+    }
+}
+
+export const getWishlist = async (req, res) => {
+    const list = await User.findOne({ email: req.user.email })
+        .populate("wishlist")
+        .exec();
+    res.json(list);
+}
+
+
+
+export const removeWishlist = async (req, res) => {
+    const productId = req.params.id
+    const { userId } = req.body
+    try {
+        const wishlist = await User.findByIdAndUpdate({ _id: userId }, {
+            $pull: { wishlist: productId }
+        }).exec()
+        res.json(wishlist)
+    }
+    catch (error) {
+        console.log('error while delete wishlist', error);
+    }
+}

@@ -14,6 +14,7 @@ import stateRoutes from './routes/stateRoutes.js'
 import cityRoutes from './routes/cityRoutes.js'
 import couponRoutes from './routes/couponRoutes.js'
 import packageRoutes from './routes/packageRoutes.js'
+import orderRoutes from './routes/orderRoutes.js'
 
 dotenv.config()
 connectDB()
@@ -34,7 +35,8 @@ app.use('/api', userRoutes,
     stateRoutes,
     cityRoutes,
     couponRoutes,
-    packageRoutes
+    packageRoutes,
+    orderRoutes
 )
 
 
