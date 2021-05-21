@@ -1,4 +1,5 @@
 import Category from '../models/category.js'
+import Product from '../models/product.js'
 
 export const getCategories = async (req, res) => {
     try {
@@ -38,10 +39,19 @@ export const createCategory = async (req, res) => {
 
 export const deleteCategory = async (req, res) => {
     const { id } = req.params
-    console.log(id);
     try {
         const category = await Category.findOneAndDelete({ _id: id })
         res.json(category)
+
+        Product.find({ category: id }).exec((err, product) => {
+            if (product)
+                product && product.length > 0 && product.map(p => {
+                    Product.findOneAndUpdate({ category: id }, { category: '6098c98eb1b0e85fcc4c7287', subs: '6098cc714795494a88ee79f1' }).exec((error, result) => {
+                        console.log(result)
+                    })
+                })
+        })
+
     }
     catch (error) {
         console.log('error while delete category', error);

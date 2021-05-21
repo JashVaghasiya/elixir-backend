@@ -1,5 +1,6 @@
 import mongoose from 'mongoose'
 import Product from '../models/product.js'
+import Review from '../models/review.js'
 
 export const createProduct = async (req, res) => {
 
@@ -50,10 +51,11 @@ export const deleteProduct = async (req, res) => {
         console.log('Error in Deleting product at Controller', error);
     }
 }
+
 export const getProduct = async (req, res) => {
     const id = req.params.id
     try {
-        await Product.findById({ _id: id }).populate("user subs category").exec((err, result) => {
+        await Product.findById({ _id: id }).populate("seller subs category").exec((err, result) => {
             if (err) {
                 console.log(err);
             } else {
@@ -65,9 +67,25 @@ export const getProduct = async (req, res) => {
     }
 }
 
-export const getProducts = async (req, res) => {
+export const getReview = async (req, res) => {
+    const id = req.params.id
     try {
-        await Product.find().populate("user subs category").exec((err, result) => {
+        await Review.find({ productId: id }).populate("user").exec((err, result) => {
+            if (err) {
+                console.log(err);
+            } else {
+                res.json(result)
+            }
+        })
+    } catch (error) {
+        console.log('Error in Fetching Review at Controller', error);
+    }
+}
+
+export const getProducts = async (req, res) => {
+
+    try {
+        await Product.find({}).populate("user subs category").exec((err, result) => {
             if (err) {
                 console.log(err)
             } else {
@@ -163,23 +181,24 @@ export const rejectProduct = async (req, res) => {
     }
 }
 
+//unapproved products
 export const getUnapprovedProduct = async (req, res) => {
     try {
-        await Product.find({ approved: false }).then(result => {
+        await Product.find({ approved: false, rejected: false }).populate("seller").then(result => {
             res.json(result)
         }).catch(err => {
             console.log(err)
         })
-        res.json(product)
     } catch (error) {
-        console.log('Error in Approve product at Controller');
+        console.log('Error in Approve product at Controller', error);
     }
 }
 
+//get rejected products
 export const getRejectedProducts = async (req, res) => {
     const id = req.params.id
     try {
-        await Product.find({ _id: id, rejected: true }).then(result => {
+        await Product.find({ seller: id, rejected: true }).then(result => {
             res.json(result)
         }).catch(err => {
             console.log(err)
@@ -190,6 +209,7 @@ export const getRejectedProducts = async (req, res) => {
     }
 }
 
+//for seller
 export const getActiveProducts = async (req, res) => {
     const id = req.params.id
     try {
@@ -204,6 +224,7 @@ export const getActiveProducts = async (req, res) => {
     }
 }
 
+// for seller
 export const getDeactivatedProducts = async (req, res) => {
     const id = req.params.id
     try {
@@ -216,3 +237,95 @@ export const getDeactivatedProducts = async (req, res) => {
         console.log('Error in Getting Deactivated product at Controller', error);
     }
 }
+
+
+//homepage controllers
+
+export const getHomeProducts = async (req, res) => {
+    Product.find({ approved: true, activated: true }).populate("user subs category").exec((err, result) => {
+        if (err) return console.log(err);
+        res.json(result)
+    })
+}
+
+export const getSearchedProducts = async (req, res) => {
+    const keyword = new RegExp(req.body.text, 'ig')
+    try {
+        Product.find({ name: keyword, approved: true, activated: true }).populate("user subs category").exec((err, result) => {
+            if (err) return console.log(err);
+            res.json(result)
+        })
+    } catch (error) {
+        console.log('Error in Fetching Review at Controller', error);
+    }
+}
+
+export const getFilteredProducts = async (req, res) => {
+
+    const { priceRange, selectedCat, rating, form, type } = req.body.filters;
+    console.log(priceRange[0], priceRange[1], selectedCat, rating, form, type);
+    try {
+        if (selectedCat.length > 0) {
+            Product.find({ approved: true, activated: true, type: type, price: { $gte: priceRange[0], $lt: priceRange[1] }, form: form, rating: { $gte: rating }, category: { $in: selectedCat } }).populate("user subs category").exec((err, result) => {
+                if (err) return console.log(err);
+                console.log(result);
+                res.json(result)
+            })
+        } else {
+            Product.find({ approved: true, activated: true, type: type, price: { $gte: priceRange[0], $lt: priceRange[1] }, form: form, rating: { $gte: rating } }).populate("user subs category").exec((err, result) => {
+                if (err) return console.log(err);
+                console.log(result);
+                res.json(result)
+            })
+        }
+    } catch (error) {
+        console.log('Error in Fetching Review at Controller', error);
+    }
+
+}
+
+
+export const getTopRated = async (req, res) => {
+    try {
+        Product.find({ approved: true, activated: true }).sort({ rating: -1 }).limit(10).exec((err, result) => {
+            if (err) return console.log(err)
+            res.json(result)
+        })
+    } catch (err) {
+        console.log(err)
+    }
+}
+
+export const getTopGrossing = async (req, res) => {
+    try {
+        Product.find({ approved: true, activated: true }).sort({ sold: -1 }).limit(10).exec((err, result) => {
+            if (err) return console.log(err)
+            res.json(result)
+        })
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+export const getCategoryViseProduct = async (req, res) => {
+    try {
+        Product.find({ category: req.params.category }).sort({ sold: -1 }).exec((err, result) => {
+            if (err) return console.log(err)
+            res.json(result)
+        })
+    } catch (err) {
+        console.log(err);
+    }
+}
+
+export const getSubCategoryViseProduct = async (req, res) => {
+    try {
+        Product.find({ subs: { $in: [req.params.subcategory] } }).sort({ sold: -1 }).exec((err, result) => {
+            if (err) return console.log(err)
+            res.json(result)
+        })
+    } catch (err) {
+        console.log(err);
+    }
+}
+

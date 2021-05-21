@@ -11,7 +11,11 @@ const orderSchema = mongoose.Schema({
         type: ObjectId,
         ref: 'user'
     },
-    qty: {
+    sellerId: {
+        type: ObjectId,
+        ref: 'user'
+    },
+    totalQty: {
         type: Number
     },
     totalAmount: {
@@ -20,6 +24,14 @@ const orderSchema = mongoose.Schema({
     productId: {
         type: ObjectId,
         ref: 'product'
+    },
+    pickUpDate: {
+        type: Date,
+        default: null
+    },
+    picked: {
+        type: Boolean,
+        default: false
     }
 }, { timestamps: true })
 

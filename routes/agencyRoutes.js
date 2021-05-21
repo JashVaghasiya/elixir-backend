@@ -5,6 +5,7 @@ import { createAgency, getAgency, updateAgency, manageAgency, deleteAgency } fro
 
 const router = express.Router()
 
-router.post('/admin/agency', authCheck, agencyCheck, createAgency)
-router.route('/admin/agency/:id').get(authCheck, agencyCheck, getAgency).delete(authCheck, adminCheck, deleteAgency).put(authCheck, agencyCheck, updateAgency)
+router.post('/agency', authCheck, agencyCheck, createAgency)
+router.put('/agency/:id', authCheck, agencyCheck, updateAgency)
+router.route('/admin/agency/:id').get(authCheck, agencyCheck, getAgency).delete(authCheck, adminCheck, deleteAgency)
 router.put('/admin/agency/manage/:id', authCheck, adminCheck, manageAgency)

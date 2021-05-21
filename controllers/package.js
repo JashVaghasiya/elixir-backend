@@ -57,6 +57,22 @@ export const getPack = async (req, res) => {
     }
 }
 
+export const getPackage = async (req, res) => {
+    const id = req.params.id
+    try {
+        await Package.findById({ _id: id }).exec((err, result) => {
+            if (err) {
+                console.log(err);
+            } else {
+                res.json(result)
+                console.log(result)
+            }
+        })
+    } catch (error) {
+        console.log('Error in Fetching One Package at Controller', error);
+    }
+}
+
 export const getPacks = async (req, res) => {
 
     try {

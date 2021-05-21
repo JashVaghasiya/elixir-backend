@@ -59,7 +59,6 @@ export const agencyCheck = async (req, res, next) => {
 export const sellerCheck = async (req, res, next) => {
     try {
         const { email } = req.user
-        console.log("Seller User", req.user);
         const user = await User.findOne({ email: email })
 
         if (user.role === 'seller') {

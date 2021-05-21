@@ -8,9 +8,16 @@ const orderSchema = mongoose.Schema({
         ref: 'user'
     },
     status: {
-        type: String
+        type: String,
+        default: 'Pending'
     },
-    qty: {
+    totalQty: {
+        type: Number
+    },
+    taxAmount: {
+        type: Number
+    },
+    shippingCharges: {
         type: Number
     },
     grandTotal: {
@@ -20,8 +27,17 @@ const orderSchema = mongoose.Schema({
         type: ObjectId,
         ref: 'coupon'
     },
+    address: {
+        type: String
+    },
     discountedAmount: {
         type: Number
+    },
+    transactionId: {
+        type: String
+    },
+    invoiceURL: {
+        type: String
     }
 }, { timestamps: true })
 

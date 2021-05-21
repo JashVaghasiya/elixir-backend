@@ -21,6 +21,10 @@ const packageSchema = new mongoose.Schema({
         type: Boolean,
         default: false
     },
+    adsRate: {
+        type: Number,
+        default: 10
+    },
     products: {
         type: Number,
         default: 15

@@ -1,5 +1,4 @@
 import mongoose from 'mongoose'
-import reviewsSchema from './review.js'
 
 const { ObjectId } = mongoose.Schema.Types
 
@@ -35,18 +34,10 @@ export const productSchema = mongoose.Schema({
     price: {
         type: Number
     },
-    reviews: [
-        reviewsSchema
-    ],
     rating: {
         type: Number,
         default: 0
     },
-    numRatings: {
-        type: Number,
-        default: 0
-    },
-
     numReviews: {
         type: Number,
         default: 0

@@ -1,4 +1,5 @@
 import Cart from '../models/cart.js'
+import Product from '../models/product.js'
 
 export const addToCart = async (req, res) => {
     const { productId, qty, userId } = req.body
@@ -21,7 +22,7 @@ export const addToCart = async (req, res) => {
 
 export const updateCart = async (req, res) => {
     const { cartId, qty } = req.body
-    console.log(cartId)
+
     try {
         Cart.findOneAndUpdate({ _id: cartId }, { qty: qty }).exec((err, result) => {
             if (!err) {
@@ -37,16 +38,15 @@ export const updateCart = async (req, res) => {
 }
 
 export const getCart = async (req, res) => {
-    console.log(req.params.id)
+
+
+
     Cart.find({ userId: req.params.id })
         .populate("productId")
         .exec((err, result) => {
-            if (!err) {
-                res.json(result)
-            } else {
-                console.log(err)
-            }
-        });
+            if (err) return console.log(err)
+            res.json(result)
+        })
 }
 
 export const removeFromCart = async (req, res) => {

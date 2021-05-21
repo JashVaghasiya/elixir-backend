@@ -7,6 +7,7 @@ import Category from '../models/category.js'
 import Sub from '../models/sub.js'
 import Agency from '../models/agency.js'
 import Ads from '../models/advertisement.js'
+import Complain from '../models/complain.js'
 
 export const getUserCount = async (req, res) => {
     let data = []
@@ -164,8 +165,10 @@ export const deactivateUser = async (req, res) => {
     const { id } = req.params
 
     try {
-        const user = await User.findOneAndUpdate({ _id: id }, { activated: false })
-        res.json(user)
+        User.findOneAndUpdate({ _id: id }, { activated: false }).exec((err, result) => {
+            if (err) return console.log(err)
+            res.json(result)
+        })
     } catch (err) {
         console.log(err)
         res.json({
@@ -176,12 +179,12 @@ export const deactivateUser = async (req, res) => {
 
 export const activateUser = async (req, res) => {
 
-    const id = req.params.id
-    console.log('id at controller-->', id)
-
+    const { id } = req.params
     try {
-        const user = await User.findOneAndUpdate({ _id: id }, { activated: true })
-        res.json(user)
+        User.findOneAndUpdate({ _id: id }, { activated: true }).exec((err, result) => {
+            if (err) return console.log(err)
+            res.json(result)
+        })
     } catch (err) {
         console.log(err)
         res.json({
@@ -191,8 +194,27 @@ export const activateUser = async (req, res) => {
 }
 
 
+export const getComplains = async (req, res) => {
+    try {
+        await Complain.find({ solved: false }).populate('userId').exec((err, result) => {
+            if (err) return console.log(err);
+            res.json(result)
+        })
+    } catch (err) {
+        console.log(err)
+    }
+}
 
-
+export const solveComplain = async (req, res) => {
+    try {
+        await Complain.findOneAndUpdate({ _id: req.body.id }, { solved: true }).exec((err, result) => {
+            if (err) return console.log(err);
+            res.json(result)
+        })
+    } catch (err) {
+        console.log(err)
+    }
+}
 
 
 

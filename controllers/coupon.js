@@ -1,4 +1,5 @@
 import Coupon from '../models/coupon.js'
+import UsedCoupon from '../models/usedcoupon.js'
 
 export const getCoupons = async (req, res) => {
     try {
@@ -10,10 +11,16 @@ export const getCoupons = async (req, res) => {
 }
 
 export const getCoupon = async (req, res) => {
-    const { id } = req.params
+    const { name } = req.params
     try {
-        const coupon = await Coupon.findOne({ _id: id }).exec()
-        res.json(coupon)
+        Coupon.findOne({ name: name.toUpperCase() }).exec((err, result) => {
+            if (err) return console.log(err)
+            if (result !== null) {
+                res.json(result)
+            } else {
+                res.json({ notFound: "Coupon code not found!" })
+            }
+        })
     } catch (error) {
         console.log('error while getting coupon', error);
     }
@@ -67,3 +74,25 @@ export const deleteCoupon = async (req, res) => {
         console.log('error while creating coupon', error);
     }
 }
+
+
+export const applyCoupon = async (req, res) => {
+
+    const { couponId, userId } = req.body
+    try {
+        UsedCoupon.findOne({ couponId: couponId, userId: userId }).exec((err, result) => {
+            if (err) return console.log(err)
+            if (result == null) {
+                const newUsedCoupon = new UsedCoupon({ couponId: couponId, userId: userId })
+                newUsedCoupon.save()
+            } else {
+                res.json({ used: "Already used this coupon code!" })
+            }
+        })
+
+    }
+    catch (error) {
+        console.log('error while creating coupon', error);
+    }
+}
+

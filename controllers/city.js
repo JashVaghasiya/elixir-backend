@@ -91,9 +91,12 @@ export const getCity = async (req, res) => {
 
 export const getCitiesOfState = async (req, res) => {
 
+    const name = req.params.id
+
     try {
-        const cities = await City.find({ state: req.params.id })
-        res.json(cities)
+        const cities = await City.find({}).populate('state')
+        const city = cities.filter(c => c.state.name === name)
+        res.json(city)
     }
     catch (error) {
         console.log('error while finding cities of state', error);

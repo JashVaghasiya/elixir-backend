@@ -31,10 +31,13 @@ export const addToWishlist = async (req, res) => {
 }
 
 export const getWishlist = async (req, res) => {
-    const list = await User.findOne({ email: req.user.email })
-        .populate("wishlist")
-        .exec();
-    res.json(list);
+    User.findOne({ email: req.user.email })
+        .populate('wishlist')
+        .exec((err, result) => {
+            if (err) return console.log(err);
+            res.json(result)
+        });
+
 }
 
 
@@ -42,6 +45,8 @@ export const getWishlist = async (req, res) => {
 export const removeWishlist = async (req, res) => {
     const productId = req.params.id
     const { userId } = req.body
+    console.log(productId, userId)
+
     try {
         const wishlist = await User.findByIdAndUpdate({ _id: userId }, {
             $pull: { wishlist: productId }

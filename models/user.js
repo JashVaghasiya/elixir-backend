@@ -19,6 +19,12 @@ const userSchema = mongoose.Schema({
     address: {
         type: String
     },
+    state: {
+        type: String
+    },
+    city: {
+        type: String
+    },
     remainingDays: {
         type: Number
     },
