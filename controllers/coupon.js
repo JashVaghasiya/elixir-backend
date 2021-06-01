@@ -85,6 +85,7 @@ export const applyCoupon = async (req, res) => {
             if (result == null) {
                 const newUsedCoupon = new UsedCoupon({ couponId: couponId, userId: userId })
                 newUsedCoupon.save()
+                res.json({ used: null })
             } else {
                 res.json({ used: "Already used this coupon code!" })
             }
@@ -93,6 +94,24 @@ export const applyCoupon = async (req, res) => {
     }
     catch (error) {
         console.log('error while creating coupon', error);
+    }
+}
+
+export const decrementExpireAt = async () => {
+    try {
+        const coupon = await Coupon.find({})
+        coupon.forEach(c => {
+            Coupon.findOneAndUpdate({ _id: c._id }, { expiresAt: c.expiresAt - 1 }).exec((err, result) => {
+                if (err) return console.log(err)
+                if (result.expiresAt === 1) {
+                    Coupon.findByIdAndDelete({ _id: c._id }).exec((err, result) => {
+                        if (err) return console.log(err)
+                    })
+                }
+            })
+        })
+    } catch (err) {
+        console.log(err)
     }
 }
 

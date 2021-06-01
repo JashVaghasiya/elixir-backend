@@ -82,6 +82,7 @@ export const createOrder = async (req, res) => {
             invoiceURL: downloadURL
         })
         order.save((err, order) => {
+            console.log("Order Created!")
             if (err) return console.error(err);
             cart.forEach(c => {
                 Product.findOne({ _id: c.productId._id }).exec((err, result) => {
@@ -184,6 +185,7 @@ export const getDetailOrder = async (req, res) => {
                 console.log(err)
             } else {
                 res.json(result)
+                console.log(result);
             }
         })
     } catch (err) {
@@ -300,7 +302,7 @@ export const getDetailOfOrder = async (req, res) => {
 
 
     try {
-        OrderDetail.find({ orderId: id }).populate('userId productId').exec((err, result) => {
+        OrderDetail.find({ orderId: id }).populate('userId productId sellerId orderId').exec((err, result) => {
             if (err) {
                 console.log(err)
             } else {

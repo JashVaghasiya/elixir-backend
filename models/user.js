@@ -26,7 +26,7 @@ const userSchema = mongoose.Schema({
         type: String
     },
     remainingDays: {
-        type: Number
+        type: Number,
     },
     packageId: {
         type: ObjectId,
@@ -36,6 +36,9 @@ const userSchema = mongoose.Schema({
         type: ObjectId,
         ref: 'product'
     }],
+    packageName: {
+        type: String
+    },
     totalProducts: {
         type: Number
     },

@@ -11,13 +11,13 @@ import PackageIncome from '../models/packageIncome.js'
 const stripe = new Stripe('sk_test_51IRbfUHUA6kmXMG3oK2vTQJgAiMbmqqjtpZ5p1WUL0shTZWd76LlQAaxEzQgoLM5AhQI7lVjhdJmLbTA4tw1V8En00aROjegL1')
 
 
-export const createSeller = async (request, response) => {
+export const createSeller = async (req, res) => {
 
-    const { data } = request.body
-    const { pack } = request.body
+    const { data } = req.body
+    const { pack } = req.body
 
 
-    const newSeller = new User({
+    const newSeller = await new User({
         email: data.email,
         role: "seller",
         name: data.name,
@@ -27,16 +27,18 @@ export const createSeller = async (request, response) => {
         mobile: data.mobile,
         packageId: pack._id,
         remainingDays: pack.duration,
-        remainingProducts: pack.products
+        remainingProducts: pack.products,
+        totalProducts: 0
     }).save()
-    response.json(newSeller)
-    new PackageIncome({
+
+    if (newSeller) await new PackageIncome({
         sellerId: newSeller._id,
         packageName: pack.name,
         duration: pack.duration,
         products: pack.products,
         amountPaid: pack.price
     }).save()
+    if (newSeller) res.json(newSeller)
 }
 
 export const updateSellerPackage = async (req, res) => {
@@ -53,7 +55,7 @@ export const updateSellerPackage = async (req, res) => {
         if (err) return console.log(err)
         res.json(result)
         await new PackageIncome({
-            sellerId: id,
+            seller: id,
             packageName: pack.name,
             duration: pack.duration,
             products: pack.products,

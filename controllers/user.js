@@ -6,13 +6,16 @@ import Complain from '../models/complain.js'
 
 export const createUser = async (req, res) => {
     const { email } = req.user
-    await User.findOne({ email: email }).exec((err, result) => {
+    User.findOne({ email: email }).exec((err, result) => {
         if (err) return console.log(err)
-        if (result !== null) {
-            new User({
+        console.log(result)
+        if (result == null) {
+            const user = new User({
                 name: email.split("@")[0],
-                email: email
+                email: email,
+                role: "user"
             }).save()
+            res.json(user)
         } else {
             res.json({ alreadyUser: "Email is already registered!" })
         }

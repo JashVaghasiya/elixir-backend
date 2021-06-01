@@ -22,6 +22,7 @@ import paymentRoutes from './routes/paymentRoutes.js'
 import cron from 'node-cron'
 import { decrementAds } from './controllers/ads.js'
 import { decrementSellerPackage } from './controllers/seller.js'
+import { decrementExpireAt } from './controllers/coupon.js'
 
 dotenv.config()
 connectDB()
@@ -53,6 +54,7 @@ app.use('/api', userRoutes,
 const task = cron.schedule('00 00 * * * * ', async () => {
     await decrementAds()
     await decrementSellerPackage()
+    await decrementExpireAt()
 });
 
 const PORT = process.env.PORT || 5000

@@ -1,13 +1,15 @@
 import mongoose from 'mongoose'
 import Product from '../models/product.js'
 import Review from '../models/review.js'
+import User from '../models/user.js'
 
 export const createProduct = async (req, res) => {
 
     const { product } = req.body
-    console.log(product)
     try {
         await new Product(product).save()
+        const user = await User.findOne({ _id: product.seller })
+        await User.findOneAndUpdate({ _id: product.seller }, { remainingProducts: user.remainingProducts - 1, totalProducts: user.totalProducts + 1 })
         res.json("Product Added!")
     } catch (error) {
         console.log('error in Creating product at controller', error);
@@ -44,8 +46,10 @@ export const updateProduct = async (req, res) => {
 export const deleteProduct = async (req, res) => {
 
     try {
-        Product.findOneAndDelete({ _id: req.params.id }).exec((err, result) => {
+        Product.findOneAndDelete({ _id: req.params.id }).exec(async (err, result) => {
             res.json(true)
+            const user = await User.findOne({ _id: result.seller })
+            await User.findOneAndUpdate({ _id: user._id }, { remainingProducts: user.remainingProducts + 1, totalProducts: user.totalProducts - 1 })
         })
     } catch (error) {
         console.log('Error in Deleting product at Controller', error);
@@ -242,9 +246,12 @@ export const getDeactivatedProducts = async (req, res) => {
 //homepage controllers
 
 export const getHomeProducts = async (req, res) => {
-    Product.find({ approved: true, activated: true }).populate("user subs category").exec((err, result) => {
+    const limit = 10
+    const pageNumber = Number(req.query.pageNumber)
+    const count = await Product.find({ approved: true, activated: true }).count()
+    Product.find({ approved: true, activated: true }).limit(limit).skip(limit * (pageNumber - 1)).populate("user subs category").exec((err, result) => {
         if (err) return console.log(err);
-        res.json(result)
+        res.json({ result: result, pages: Math.ceil(count / limit), pageNumber })
     })
 }
 
@@ -268,7 +275,6 @@ export const getFilteredProducts = async (req, res) => {
         if (selectedCat.length > 0) {
             Product.find({ approved: true, activated: true, type: type, price: { $gte: priceRange[0], $lt: priceRange[1] }, form: form, rating: { $gte: rating }, category: { $in: selectedCat } }).populate("user subs category").exec((err, result) => {
                 if (err) return console.log(err);
-                console.log(result);
                 res.json(result)
             })
         } else {
