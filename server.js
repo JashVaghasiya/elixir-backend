@@ -19,6 +19,7 @@ import orderRoutes from './routes/orderRoutes.js'
 import reviewRoutes from './routes/reviewRoutes.js'
 import adsRoutes from './routes/adsRoutes.js'
 import paymentRoutes from './routes/paymentRoutes.js'
+import dialogFlowRoutes from './routes/dialogFlowRoutes.js'
 import cron from 'node-cron'
 import { decrementAds } from './controllers/ads.js'
 import { decrementSellerPackage } from './controllers/seller.js'
@@ -48,7 +49,8 @@ app.use('/api', userRoutes,
     orderRoutes,
     reviewRoutes,
     adsRoutes,
-    paymentRoutes
+    paymentRoutes,
+    dialogFlowRoutes
 )
 
 const task = cron.schedule('00 00 * * * * ', async () => {

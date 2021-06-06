@@ -1,5 +1,5 @@
 import express from 'express'
-import { createUser, findUser, getCurrentUser, updateUser, getUserProfile, makeComplain, listComplain, listOrder } from '../controllers/user.js'
+import { createUser, findUser, getCurrentUser, countData, updateUser, getUserProfile, makeComplain, listComplain, listOrder } from '../controllers/user.js'
 import { addToWishlist, getWishlist, removeWishlist } from '../controllers/wishlist.js'
 import { addToCart, getCart, removeFromCart, updateCart } from '../controllers/cart.js'
 import { authCheck } from '../middleware/auth.js'
@@ -9,6 +9,7 @@ const router = express.Router()
 router.post('/user/register', authCheck, createUser)
 router.post('/user/login', authCheck, findUser)
 router.post('/user/update', authCheck, updateUser)
+router.get('/user/footer/count', countData)
 router.get('/current/user', authCheck, getCurrentUser)
 router.get('/user/get/profile/:id', authCheck, getUserProfile)
 router.post('/user/cart/add', authCheck, addToCart)

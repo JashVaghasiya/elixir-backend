@@ -5,7 +5,6 @@ import State from '../models/state.js'
 import City from '../models/city.js'
 import Category from '../models/category.js'
 import Sub from '../models/sub.js'
-import Agency from '../models/agency.js'
 import Ads from '../models/advertisement.js'
 import Complain from '../models/complain.js'
 

@@ -2,6 +2,7 @@ import mongoose from 'mongoose'
 import Product from '../models/product.js'
 import Review from '../models/review.js'
 import User from '../models/user.js'
+import Ads from '../models/advertisement.js'
 
 export const createProduct = async (req, res) => {
 
@@ -49,6 +50,7 @@ export const deleteProduct = async (req, res) => {
         Product.findOneAndDelete({ _id: req.params.id }).exec(async (err, result) => {
             res.json(true)
             const user = await User.findOne({ _id: result.seller })
+            await Ads.findOneAndDelete({ productId: req.params.id })
             await User.findOneAndUpdate({ _id: user._id }, { remainingProducts: user.remainingProducts + 1, totalProducts: user.totalProducts - 1 })
         })
     } catch (error) {
@@ -271,17 +273,34 @@ export const getFilteredProducts = async (req, res) => {
 
     const { priceRange, selectedCat, rating, form, type } = req.body.filters;
     console.log(priceRange[0], priceRange[1], selectedCat, rating, form, type);
+    let forms = []
+    if (form === "All") {
+        forms = ["Syrup", "Tablet", "Capsule", "Liquid", "Drops", "Other", "Cream"]
+    }
     try {
-        if (selectedCat.length > 0) {
+        if (selectedCat.length > 0 && form === "All") {
+            console.log("Cat with All");
+            Product.find({ approved: true, activated: true, type: type, price: { $gte: priceRange[0], $lt: priceRange[1] }, form: forms, rating: { $gte: rating }, category: { $in: selectedCat } }).populate("user subs category").exec((err, result) => {
+                if (err) return console.log(err);
+                return res.json(result)
+            })
+        } else if (selectedCat.length > 0) {
+            console.log("Cat");
             Product.find({ approved: true, activated: true, type: type, price: { $gte: priceRange[0], $lt: priceRange[1] }, form: form, rating: { $gte: rating }, category: { $in: selectedCat } }).populate("user subs category").exec((err, result) => {
                 if (err) return console.log(err);
-                res.json(result)
+                return res.json(result)
+            })
+        } else if (form === "All") {
+            console.log("All");
+            Product.find({ approved: true, activated: true, type: type, price: { $gte: priceRange[0], $lt: priceRange[1] }, form: forms, rating: { $gte: rating }, category: { $in: selectedCat } }).populate("user subs category").exec((err, result) => {
+                if (err) return console.log(err);
+                return res.json(result)
             })
         } else {
-            Product.find({ approved: true, activated: true, type: type, price: { $gte: priceRange[0], $lt: priceRange[1] }, form: form, rating: { $gte: rating } }).populate("user subs category").exec((err, result) => {
+            console.log("Else");
+            Product.find({ approved: true, activated: true, type: type, price: { $gte: priceRange[0], $lt: priceRange[1] }, form: form, rating: { $gte: rating, $eq: rating } }).populate("user subs category").exec((err, result) => {
                 if (err) return console.log(err);
-                console.log(result);
-                res.json(result)
+                return res.json(result)
             })
         }
     } catch (error) {

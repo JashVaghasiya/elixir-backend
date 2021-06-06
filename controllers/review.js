@@ -24,7 +24,7 @@ export const createReview = async (req, res) => {
                             })
                         })
                     })
-
+                    res.json({ success: "Added Review!" })
                 } else {
                     res.json({ alreadyReviewed: "You have Already Reviewed!" })
                 }

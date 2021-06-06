@@ -2,6 +2,7 @@ import User from '../models/user.js'
 import Doctor from '../models/doctor.js'
 import Order from '../models/order.js'
 import Complain from '../models/complain.js'
+import State from '../models/state.js'
 
 
 export const createUser = async (req, res) => {
@@ -122,3 +123,31 @@ export const listOrder = async (req, res) => {
         }
     })
 }
+
+export const countData = async (req, res) => {
+
+    let data = []
+
+    await Order.find({}).countDocuments().then(res => {
+        data.push({
+            name: "order",
+            count: res
+        })
+    })
+    await State.find({}).countDocuments().then(res => {
+        data.push({
+            name: "state",
+            count: res
+        })
+    })
+    await User.find({ role: 'seller' }).countDocuments().then(res => {
+        data.push({
+            name: "seller",
+            count: res
+        })
+    })
+
+    res.json(data)
+
+}
+
