@@ -1,5 +1,7 @@
 import User from '../models/user.js'
 import Product from '../models/product.js'
+import AdsIncome from '../models/adsIncome.js'
+import PackageIncome from '../models/packageIncome.js'
 import Order from '../models/order.js'
 import State from '../models/state.js'
 import City from '../models/city.js'
@@ -7,6 +9,7 @@ import Category from '../models/category.js'
 import Sub from '../models/sub.js'
 import Ads from '../models/advertisement.js'
 import Complain from '../models/complain.js'
+import Doctor from '../models/doctor.js'
 
 export const getUserCount = async (req, res) => {
     let data = []
@@ -107,20 +110,19 @@ export const getOrderCount = async (req, res) => {
             count: res
         })
     })
-    await Order.find({ status: "delivered" }).count().then(res => {
+    await Order.find({ status: "Delivered" }).count().then(res => {
         data.push({
             name: "Delivered Orders",
             count: res
         })
     })
-    await Order.find({ status: "pending" }).count().then(res => {
+    await Order.find({ status: "Pending" }).count().then(res => {
         data.push({
             name: "Pending Orders",
             count: res
         })
     })
     res.json(data)
-    console.log(data)
 }
 
 export const getUsers = async (req, res) => {
@@ -215,7 +217,55 @@ export const solveComplain = async (req, res) => {
     }
 }
 
-
-
+export const getCardCount = async (req, res) => {
+    var data = []
+    try {
+        await Order.aggregate([
+            {
+            $group: {
+                _id: 0,
+                total: {
+                    $sum: "$grandTotal"
+                }
+            }
+        }]).exec((err, result) => {
+            if (err) return console.log(err);
+            data.push({orderIncome :result[0].total})
+            AdsIncome.aggregate([
+            {
+            $group: {
+                _id: 0,
+                total: {
+                    $sum: "$amountPaid"
+                }
+            }
+            }]).exec((err, result) => {
+                if (err) return console.log(err);
+                data.push({adsIncome:result[0].total})
+                PackageIncome.aggregate([
+                    {
+                    $group: {
+                        _id: 0,
+                        total: {
+                            $sum: "$amountPaid"
+                        }
+                    }
+                }]).exec((err, result) => {
+                    if (err) return console.log(err);
+                    data.push({packageIncome:result[0].total})
+                    User.find({}).count().exec((err,result)=>{
+                        data.push({totalUser: result})
+                        Doctor.find({}).count().exec((err,result)=>{
+                            data.push({totalDoctor: result})
+                            res.json(data)    
+                        })
+                    })
+                })
+            })
+        })
+    } catch (err) {
+        console.log(err)
+    }
+}
 
 

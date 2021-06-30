@@ -1,5 +1,5 @@
 import express from 'express'
-import { getUsers, deactivateUser, activateUser, getUserCount, getLocationCount, getOtherCount, getOrderCount, getProductCount, getComplains, solveComplain } from '../controllers/admin.js'
+import { getUsers, deactivateUser, activateUser, getUserCount, getLocationCount, getCardCount,getOtherCount, getOrderCount, getProductCount, getComplains, solveComplain } from '../controllers/admin.js'
 import { authCheck, adminCheck } from '../middleware/auth.js'
 import { getSellers, getSingleSeller } from '../controllers/seller.js'
 import { getOrders } from '../controllers/order.js'
@@ -25,6 +25,7 @@ router.get('/admin/product/count', authCheck, adminCheck, getProductCount)
 router.get('/admin/order/count', authCheck, adminCheck, getOrderCount)
 router.get('/admin/location/count', authCheck, adminCheck, getLocationCount)
 router.get('/admin/other/count', authCheck, adminCheck, getOtherCount)
+router.get('/admin/card/count', authCheck,adminCheck,getCardCount)
 
 export default router
 

@@ -102,7 +102,7 @@ export const getSellers = async (req, res) => {
         if (limit !== null && pageNumber !== 0 && sortName !== null && type !== null) {
 
             const count = await User.find({ role: 'seller' }).countDocuments()
-            User.find({ role: 'seller' }).limit(limit).skip(limit * (pageNumber - 1)).sort({ [sortName]: type }).exec((err, result) => {
+            User.find({ role: 'seller' }).limit(limit).skip(limit * (pageNumber - 1)).sort({ [sortName]: type }).populate("packageId").exec((err, result) => {
                 if (err) {
                     console.log(err)
                 } else {
@@ -110,7 +110,7 @@ export const getSellers = async (req, res) => {
                 }
             })
         } else {
-            await User.find({ role: 'seller' }).exec((err, result) => {
+            await User.find({ role: 'seller' }).populate("packageId").exec((err, result) => {
                 if (err) {
                     console.log(err)
                 } else {

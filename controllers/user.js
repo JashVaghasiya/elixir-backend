@@ -52,10 +52,19 @@ export const findUser = async (req, res) => {
             if (user == null) {
                 Doctor.findOne({ email: email }).exec((err, doctor) => {
                     if (err) return console.log(err);
-                    res.json(doctor)
+                    if (doctor.isActive) {
+                        res.json(doctor)
+                    } else {
+                        res.json({ deactivated: "You are deactivated by Admin!" })
+                    }
                 })
             } else {
-                res.json(user)
+                if (user.activated) {
+                    res.json(user)
+                } else {
+                    res.json({ deactivated: "You are deactivated by Admin!" })
+                }
+
             }
         }
     })
@@ -69,7 +78,9 @@ export const getCurrentUser = async (req, res) => {
                 res.json(doctor)
             })
         } else {
-            res.json(user)
+            if (user.activated) {
+                res.json(user)
+            }
         }
         if (err) {
             console.log("Get User:", err);
